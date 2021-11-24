@@ -4,7 +4,7 @@ var format = require('date-format');
 format.asString();
 
 const app = express();
-const PORT = 4000 || process.env.PORT;
+const PORT = process.env.PORT ||4000 ;
 
 
 
@@ -12,9 +12,7 @@ app.get("/",(req,res)=>{
 res.send("that's i already know")
 })
 
-app.get("/api/v1/:tokenfuckyou",(req,res)=>{
-    res.status(200).json({param: req.params})
-})
+
 
 app.get("/v1/instagram",(req,res)=>{
     const instaSocial = {
@@ -47,6 +45,9 @@ app.get("/v1/linkedin",(req,res)=>{
 res.status(200).json(instaSocial)
 })
 
+app.get("/api/v1/:token",(req,res)=>{
+    res.status(200).json({param: req.params})
+})
 
 app.listen(PORT,()=>{
     console.log(`server is running on port ${PORT}`);
