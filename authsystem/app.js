@@ -83,7 +83,7 @@ app.post("/login", async (req, res) => {
       res.status(400).send("please enter valid user email");
     }
 
-    const isCorrectPaas = await bcrypt.compare(password, user.password);
+    const isCorrectPaas = await bcryptjs.compare(password, user.password);
 
     if (!isCorrectPaas) {
       res.status(400).send("Invalid Password");
