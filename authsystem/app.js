@@ -4,7 +4,6 @@ const bcryptjs = require("bcryptjs"); // it used to convert simple string passwo
 const express = require("express");
 const User = require("./model/user");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const auth = require("./middleware/auth");
 
