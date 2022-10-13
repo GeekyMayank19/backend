@@ -1,22 +1,25 @@
 require("dotenv").config();
 require("./config/database").connect(); // calling data base config
 const bcryptjs = require("bcryptjs"); // it used to convert simple string password to encrypted format
-const express = require("express");
+const express = require("express"); // web frameWork for nodejs
 const User = require("./model/user");
 const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 const auth = require("./middleware/auth");
-
+var cors = require("cors");
 
 const app = express();
 
 ///middleware
-app.use(express.json());
+app.use(express.json()); // express middle ware help express to read file in form json formate
 app.use(cookieParser());
+app.use(cors());
 
 //routers
 app.get("/", (req, res) => {
+  res.send("<h1>Hello from auth system OK</h1>");
+});
+app.get("/register", cors(), (req, res) => {
   res.send("<h1>Hello from auth system</h1>");
 });
 
@@ -35,13 +38,13 @@ app.post("/register", async (req, res) => {
     if (existingUser) {
       res.status(400).send("user allready exist ");
     }
-
     // we can write here or in schema model
     // using middleware provided by mongoose
 
     // this will return encrypted password
     const encryptedPass = await bcryptjs.hash(password, 10);
 
+    //it is database operation so use await
     const user = await User.create({
       firstname,
       lastname,
@@ -52,18 +55,14 @@ app.post("/register", async (req, res) => {
     ///generating token
     const token = jwt.sign(
       { user_id: user._id, email }, //user._id is return by User.create query
-      //it continan some data like user._id etc
+      //it contains some data like user._id etc
       process.env.SECRET_KEY,
       { expiresIn: "2h" } // time to expaire the token
     );
-
     //not save in database but it don't go in req.send
-
     user.password = undefined;
-
     user.token = token;
     // upadate in db on not it your choice
-
     res.status(201).send(user);
   } catch (error) {
     console.log(error);
@@ -83,7 +82,7 @@ app.post("/login", async (req, res) => {
       res.status(400).send("please enter valid user email");
     }
 
-    const isCorrectPaas = await bcrypt.compare(password, user.password);
+    const isCorrectPaas = await bcryptjs.compare(password, user.password);
 
     if (!isCorrectPaas) {
       res.status(400).send("Invalid Password");
@@ -104,7 +103,7 @@ app.post("/login", async (req, res) => {
       const options = {
         expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
         // if it is true then cookies can be access by only backend
-        //it can't be used by frontend 
+        //it can't be used by frontend
         httpOnly: true,
       };
 
@@ -113,9 +112,7 @@ app.post("/login", async (req, res) => {
         token,
         user,
       });
-
     }
-
   } catch (error) {
     console.log(error);
   }
