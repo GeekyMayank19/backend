@@ -1,7 +1,0 @@
-  fileFilter: function(req,res, file, callback) {
-	var ext = path.extname(file.originalname)
-	if (ext !== '.png' && ext !== '.doc' && ext !== '.pdf' && ext !== '.jpeg') {
-		return callback(res.end('Only images are allowed'), null)
-	}
-	callback(null, true)
-}
